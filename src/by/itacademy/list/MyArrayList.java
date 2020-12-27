@@ -9,9 +9,7 @@ public class MyArrayList<T> implements MyList<T> {
     private Collection<? extends T> col;
     private Object[] array;
     private Object[] tempArray;
-    private Object[] subArray;
     private static final int CAPACITY = 10;
-    private int size;
 
     public MyArrayList() {
         this.array = new Object[CAPACITY];
@@ -27,63 +25,48 @@ public class MyArrayList<T> implements MyList<T> {
 
     public boolean add(T obj) {
         for (int i = 0; i <= array.length; i++) {
-            if (size()==array.length) {
+            if (size() == array.length) {
                 riseArray();
             }
             if (array[i] == null) {
                 array[i] = obj;
-                break;
+                return true;
             }
         }
-        return true;
-    }
-
-    public int size(){
-        size=0;
-        for (int i = 0; i < array.length ; i++) {
-            if(array[i]!=null){
-                size++;
-            }
-        }
-        return size;
+        return false;
     }
 
     @Override
     public void add(int index, T obj) {
-        if (size() < index) {
-            throw new ArrayIndexOutOfBoundsException("ArrayIndexOutOfBoundsException");
-        } else {
-            if(size()==array.length){
-                riseArray();
-            }
-            tempArray = new Object[array.length];
-            tempArray[index]=obj;
-            for (int i = 0; i < index ; i++) {
-                    tempArray[i]=array[i];
-            }
-            for (int i = index; i < size ; i++) {
-                tempArray[i+1]=array[i];
-            }
-            array=tempArray;
+        checkCapacity(index);
+
+        tempArray = new Object[array.length];
+        tempArray[index] = obj;
+        for (int i = 0; i < index; i++) {
+            tempArray[i] = array[i];
         }
+        for (int i = index; i < size(); i++) {
+            tempArray[i + 1] = array[i];
+        }
+        array = tempArray;
     }
+
 
     @Override
     public T remove(int index) {
-        if (size() < index || index<0) {
-            throw new ArrayIndexOutOfBoundsException("ArrayIndexOutOfBoundsException");
-        }
+        checkCapacity(index);
+
         tempArray = new Object[array.length];
         T obj = get(index);
 
         tempArray = new Object[array.length];
-        for (int i = 0; i < index ; i++) {
-            tempArray[i]=array[i];
+        for (int i = 0; i < index; i++) {
+            tempArray[i] = array[i];
         }
-        for (int i = index; i < size() ; i++) {
-            tempArray[i]=array[i+1];
+        for (int i = index; i < size(); i++) {
+            tempArray[i] = array[i + 1];
         }
-        array=tempArray;
+        array = tempArray;
         return obj;
     }
 
@@ -96,22 +79,21 @@ public class MyArrayList<T> implements MyList<T> {
 
     @Override
     public void sort(Comparator<? super T> comp) {
-        for (int i = size()-1; i > 0; i--) {
+        for (int i = size() - 1; i > 0; i--) {
             for (int j = 0; j < i; j++) {
-                if((comp.compare((T) array[i], (T) array[j]))<1){
+                if ((comp.compare((T) array[i], (T) array[j])) < 1) {
                     Object temp = array[j];
                     array[j] = array[i];
                     array[i] = temp;
                 }
             }
-
         }
     }
 
     @Override
     public MyList<T> subList(int start, int end) {
-        MyList <T> mySubArrayList = new MyArrayList<>();
-        for (int i = start; i < end ; i++) {
+        MyList<T> mySubArrayList = new MyArrayList<>();
+        for (int i = start; i < end; i++) {
             mySubArrayList.add((T) array[i]);
         }
         return mySubArrayList;
@@ -119,11 +101,14 @@ public class MyArrayList<T> implements MyList<T> {
 
     @Override
     public boolean addAll(int index, Collection<? extends T> col) {
-        subArray = col.toArray();
+        Object[] subArray = col.toArray();
+        if (subArray.length == 0) {
+            return false;
+        }
         for (int i = 0; i < col.size(); i++) {
-                add(index, (T) subArray[i]);
-                index++;
-            }
+            add(index, (T) subArray[i]);
+            index++;
+        }
         return true;
     }
 
@@ -144,7 +129,7 @@ public class MyArrayList<T> implements MyList<T> {
 
     @Override
     public int lastIndexOf(Object obj) {
-        for (int i = array.length-1; i >= 0; i--) {
+        for (int i = array.length - 1; i >= 0; i--) {
             if (array[i] != null && array[i].equals(obj)) {
                 return i;
             }
@@ -152,13 +137,33 @@ public class MyArrayList<T> implements MyList<T> {
         return -1;
     }
 
-        public static MyList of(Object...objects) {
-            MyList<Object> l = new MyArrayList<>();
-            for (Object t:objects) {
-                l.add(t);
-            }
-            return l;
+    public static MyList of(Object... objects) {
+        MyList<Object> l = new MyArrayList<>();
+        for (Object t : objects) {
+            l.add(t);
         }
+        return l;
+    }
+
+    public int size() {
+        int size = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] != null) {
+                size++;
+            }
+        }
+        return size;
+    }
+
+    private void checkCapacity(int index) {
+        if (size() < index || index < 0) {
+            throw new ArrayIndexOutOfBoundsException("ArrayIndexOutOfBoundsException");
+        } else {
+            if (size() == array.length) {
+                riseArray();
+            }
+        }
+    }
 
     private void riseArray() {
         tempArray = new Object[array.length];
@@ -167,7 +172,6 @@ public class MyArrayList<T> implements MyList<T> {
         for (int i = 0; i < tempArray.length; i++) {
             array[i] = tempArray[i];
         }
-        System.out.println("Capacity: "+array.length);
     }
 
     @Override
@@ -175,7 +179,7 @@ public class MyArrayList<T> implements MyList<T> {
         return new ListIterator();
     }
 
-    private class ListIterator implements Iterator<T>{
+    private class ListIterator implements Iterator<T> {
 
 
         private int currentIndex;

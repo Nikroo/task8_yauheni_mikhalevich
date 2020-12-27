@@ -2,12 +2,10 @@ package by.itacademy;
 
 import by.itacademy.car.Car;
 import by.itacademy.car.CarPowerComparator;
-import by.itacademy.car.MyObject;
 import by.itacademy.list.MyArrayList;
 import by.itacademy.list.MyList;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Main {
@@ -22,8 +20,9 @@ public class Main {
         for (int i = 0; i < stringList.size(); i++) {
             System.out.print(stringList.get(i)+" ");
         }
+        System.out.println();
 
-        MyList<Car> nativeCarList = new MyArrayList<>();
+        MyList<Car> nativeCarList = new MyArrayList<>(17);
 
         for (int i = 0; i < 15; i++) {
             nativeCarList.add(new Car("VAZ-"+"210"+i, i*10));
@@ -34,18 +33,18 @@ public class Main {
         foreignCarList.add(1,new Car("BMW", 700));
 
         nativeCarList.addAll(1, foreignCarList);
-
-        nativeCarList.remove(0);
-        nativeCarList.set(11, new Car("UAZ", 500));
-        nativeCarList.add(new Car("Mercedes", 1000));
         nativeCarList.sort(new CarPowerComparator());
 
-        System.out.println("Mercedes indexOf:"+nativeCarList.indexOf(new Car("Mercedes", 1000)));
-        System.out.println("Mercedes lastIndexOf:"+nativeCarList.lastIndexOf(new Car("Mercedes", 1000)));
-
+        int i=0;
         for (Car element: nativeCarList) {
-            System.out.println(element);
+            System.out.println(i+" "+element);
+            i++;
         }
 
+        System.out.print("\nMercedes indexOf:"+nativeCarList.indexOf(new Car("Mercedes", 1000)));
+        System.out.print("\nMercedes lastIndexOf:"+nativeCarList.lastIndexOf(new Car("Mercedes", 1000)));
+        System.out.print("\nElement: "+nativeCarList.remove(0)+" was remove.");
+        System.out.print("\nElement: "+nativeCarList.set(11, new Car("UAZ", 500))+" was replaced.");
+        nativeCarList.add(new Car("Mercedes", 1000));
     }
 }
